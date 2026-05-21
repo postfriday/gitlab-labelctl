@@ -1,7 +1,10 @@
 version: '3'
 
+dotenv: ['.env']
+
 vars:
-  config: configs/root.yml
+  config: '{{.CONFIG | default "configs/root.yml"}}'
+  image: '{{.IMAGE | default "gitlab-labelctl:latest"}}'
 
 tasks:
   test:
@@ -12,27 +15,42 @@ tasks:
   labels:validate:
     desc: Validate the YAML label configuration
     cmds:
-      - docker compose run --rm labels validate --config {{.config}}
+      - task: docker:run
+        vars:
+          args: validate --config {{.config}}
 
   labels:diff:
     desc: Show planned label changes without applying them
     cmds:
-      - docker compose run --rm labels diff --config {{.config}}
+      - task: docker:run
+        vars:
+          args: diff --config {{.config}}
 
   labels:sync:
     desc: Reconcile GitLab labels with the desired YAML
     cmds:
-      - docker compose run --rm labels sync --config {{.config}}
+      - task: docker:run
+        vars:
+          args: sync --config {{.config}}
 
   labels:sync:dry-run:
     desc: Preview label reconciliation without making changes
     cmds:
-      - docker compose run --rm labels sync --dry-run --config {{.config}}
+      - task: docker:run
+        vars:
+          args: sync --dry-run --config {{.config}}
 
   docker:build:
     desc: Build the production Docker image
     cmds:
-      - docker build --pull --tag gitlab-labelctl:latest .
+      - docker build --pull --tag {{.image}} .
+
+  docker:run:
+    desc: Run the production Docker image
+    internal: true
+    deps: [docker:build]
+    cmds:
+      - docker run --rm -v "{{.ROOT_DIR}}:/workspace:ro" -w /workspace -e GITLAB_TOKEN {{.image}} {{.args}}
 
   docker:build:debug:
     desc: Build the debug Docker image with shell access

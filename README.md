@@ -24,6 +24,14 @@ task labels:sync:dry-run
 
 The utility runs inside Docker, so Go is not required on the host.
 
+Taskfile loads `.env` when present. Use `CONFIG` and `IMAGE` to override the defaults, and `GITLAB_TOKEN` for GitLab authentication:
+
+```dotenv
+CONFIG=configs/root.yml
+IMAGE=gitlab-labelctl:latest
+GITLAB_TOKEN=...
+```
+
 ## Docker
 
 Build the production image:
@@ -32,10 +40,15 @@ Build the production image:
 docker build --tag gitlab-labelctl:latest .
 ```
 
-Run sync with Docker Compose:
+Run sync with Docker:
 
 ```bash
-docker compose run --rm labels sync --config configs/root.yml
+docker run --rm \
+  -v "$PWD:/workspace:ro" \
+  -w /workspace \
+  -e GITLAB_TOKEN \
+  gitlab-labelctl:latest \
+  sync --config configs/root.yml
 ```
 
 ## GitLab authentication

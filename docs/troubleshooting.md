@@ -16,10 +16,10 @@
 
 ## Docker issues
 
-- If the service does not start, run:
+- If the image does not build cleanly, run:
 
 ```bash
-docker compose build --no-cache
+docker build --no-cache -t gitlab-labelctl:latest .
 ```
 
 - For debug access:

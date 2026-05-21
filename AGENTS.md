@@ -19,7 +19,7 @@ Primary entrypoints:
 
 ## Development Workflow
 
-Use the Taskfile and Docker Compose workflow when exercising the full CLI:
+Use the Taskfile and Docker workflow when exercising the full CLI:
 
 ```bash
 task labels:validate
@@ -89,4 +89,3 @@ If a check cannot be run because Docker, network, GitLab credentials, or host to
 - Put operational failure guidance in `docs/troubleshooting.md`.
 - Put structure and layer explanations in `docs/architecture.md`.
 - When adding flags or commands, update README examples and troubleshooting notes if user-facing behavior changes.
-
