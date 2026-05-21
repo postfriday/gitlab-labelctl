@@ -53,13 +53,25 @@ docker run --rm \
 
 ## GitLab authentication
 
+`configs/root.yml` declares which environment variable contains the GitLab token:
+
+```yaml
+gitlab:
+  auth:
+    token_env: GITLAB_TOKEN
+```
+
+`token_env` is the variable name, not the token value. With the default config, `.env` should define `GITLAB_TOKEN`, and the Docker task passes that variable into the container.
+
 Priority order:
 
 1. `--token`
 2. `--token-file`
-3. `GITLAB_TOKEN`
-4. `.env`
-5. CI variables such as `CI_JOB_TOKEN`
+3. environment variable named by `gitlab.auth.token_env`, defaulting to `GITLAB_TOKEN`
+4. `.env` next to the config file or in the current working directory
+5. CI variables such as `CI_JOB_TOKEN` or `GITLAB_CI_TOKEN`
+
+If `token_env` is changed, update `.env`, `.env.example`, and the Docker `-e ...` passthrough in `Taskfile.yml` to use the same variable name.
 
 ## Configuration
 

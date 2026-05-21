@@ -51,9 +51,11 @@ GitLab token resolution priority is:
 
 1. `--token`
 2. `--token-file`
-3. configured token env var, normally `GITLAB_TOKEN`
+3. configured token env var from `gitlab.auth.token_env`, normally `GITLAB_TOKEN`
 4. `.env`
-5. CI variables such as `CI_JOB_TOKEN`
+5. CI variables such as `CI_JOB_TOKEN` or `GITLAB_CI_TOKEN`
+
+`gitlab.auth.token_env` in `configs/root.yml` is not a token value; it is the name of the environment variable the CLI should read. Keep Taskfile `.env` loading, `.env.example`, and Docker `-e ...` passthrough aligned with that configured name. If `token_env` changes from `GITLAB_TOKEN`, update the Taskfile passthrough and examples at the same time.
 
 Never commit real tokens or generated secret files. Prefer dry-run flows for examples and verification. Avoid running mutating sync commands against real GitLab unless explicitly requested.
 
