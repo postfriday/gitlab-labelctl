@@ -75,7 +75,14 @@ If `token_env` is changed, update `.env`, `.env.example`, and the Docker `-e ...
 
 ## Configuration
 
-Use `configs/root.yml` as the desired state entrypoint.
+Use `configs/root.yml` as the desired state entrypoint. See
+[`docs/configuration.md`](docs/configuration.md) for detailed configuration
+documentation with examples.
+
+Safety note: `defaults.reconcile` is currently informational; `sync` applies the
+computed plan unless dry-run mode is enabled. `defaults.delete_unmanaged: true`
+only plans deletes for labels owned by `managed_prefixes`; an empty
+`managed_prefixes` list treats every label as owned.
 
 ## CI example
 

@@ -44,6 +44,8 @@ The runtime is intended to be Docker-first. Do not assume users have Go installe
 - YAML config should stay schema-friendly and human-readable.
 - Label colors should use GitLab-style hex colors such as `"#D73A4A"`.
 - Managed prefixes and scoped label policies are intentional safety controls. Be cautious when changing `delete_unmanaged`, `managed_prefixes`, or validation rules.
+- `defaults.reconcile` currently documents reconciliation intent but does not gate CLI behavior. The `sync` command reconciles whenever it is run unless `--dry-run` or `defaults.dry_run` is set.
+- `defaults.delete_unmanaged` only controls whether missing desired labels produce delete changes for existing GitLab labels. Deletes require both `delete_unmanaged: true` and ownership by `managed_prefixes`; if `managed_prefixes` is empty, every existing label is considered owned for deletion purposes.
 
 ## Authentication And Safety
 
