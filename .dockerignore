@@ -1,0 +1,10 @@
+**/.git
+**/.gitignore
+**/node_modules
+**/vendor
+**/*.log
+**/build
+**/docs
+**/examples
+**/configs
+**/*.md

@@ -1,0 +1,63 @@
+version: 1
+
+defaults:
+  reconcile: true
+  delete_unmanaged: false
+  dry_run: false
+
+gitlab:
+  url: https://gitlab.com
+  auth:
+    token_env: GITLAB_TOKEN
+  tls:
+    ca_file: ""
+    insecure_skip_verify: false
+  timeout: 30s
+  retry:
+    attempts: 5
+    backoff: exponential
+
+managed_prefixes:
+  - 'type::'
+  - 'status::'
+
+include:
+  - ./templates/common.yml
+  - ./groups/platform.yml
+
+templates:
+  common:
+    - name: priority::low
+      color: "#C2E0C6"
+    - name: priority::high
+      color: "#E34F4F"
+
+selectors:
+  - match: "^backend-.*"
+    include_templates:
+      - common
+
+policies:
+  require_scoped_labels: true
+  allowed_scopes:
+    - type
+    - status
+    - priority
+  forbid_labels:
+    - misc
+    - asap
+
+groups:
+  - id: platform
+    include_templates:
+      - common
+
+projects:
+  - id: platform/backend/billing-api
+    include_templates:
+      - common
+    labels:
+      - name: type::bug
+        color: "#D73A4A"
+      - name: status::review
+        color: "#5319E7"

@@ -1,0 +1,12 @@
+groups:
+  - id: platform
+    include_templates:
+      - common
+
+projects:
+  - id: platform/backend/api
+    labels:
+      - name: type::bug
+        color: "#D73A4A"
+      - name: status::review
+        color: "#5319E7"

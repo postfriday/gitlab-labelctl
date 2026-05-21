@@ -1,0 +1,8 @@
+templates:
+  common:
+    - name: type::feature
+      color: "#0E8A16"
+    - name: type::bug
+      color: "#D73A4A"
+    - name: status::triage
+      color: "#FBCA04"

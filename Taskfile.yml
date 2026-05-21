@@ -1,0 +1,35 @@
+version: '3'
+
+vars:
+  config: configs/root.yml
+
+tasks:
+  labels:validate:
+    desc: Validate the YAML label configuration
+    cmds:
+      - docker compose run --rm labels validate --config {{.config}}
+
+  labels:diff:
+    desc: Show planned label changes without applying them
+    cmds:
+      - docker compose run --rm labels diff --config {{.config}}
+
+  labels:sync:
+    desc: Reconcile GitLab labels with the desired YAML
+    cmds:
+      - docker compose run --rm labels sync --config {{.config}}
+
+  labels:sync:dry-run:
+    desc: Preview label reconciliation without making changes
+    cmds:
+      - docker compose run --rm labels sync --dry-run --config {{.config}}
+
+  docker:build:
+    desc: Build the production Docker image
+    cmds:
+      - docker build --pull --tag gitlab-labelctl:latest .
+
+  docker:build:debug:
+    desc: Build the debug Docker image with shell access
+    cmds:
+      - docker build --pull --tag gitlab-labelctl:debug -f Dockerfile.debug .

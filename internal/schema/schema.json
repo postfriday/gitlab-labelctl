@@ -1,0 +1,100 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GitLab LabelCtl Configuration",
+  "type": "object",
+  "properties": {
+    "version": {"type": "integer", "minimum": 1},
+    "defaults": {
+      "type": "object",
+      "properties": {
+        "reconcile": {"type": "boolean"},
+        "delete_unmanaged": {"type": "boolean"},
+        "dry_run": {"type": "boolean"}
+      }
+    },
+    "gitlab": {
+      "type": "object",
+      "properties": {
+        "url": {"type": "string", "format": "uri"},
+        "auth": {
+          "type": "object",
+          "properties": {
+            "token_env": {"type": "string"}
+          }
+        },
+        "tls": {
+          "type": "object",
+          "properties": {
+            "ca_file": {"type": "string"},
+            "insecure_skip_verify": {"type": "boolean"}
+          }
+        },
+        "timeout": {"type": "string"},
+        "retry": {
+          "type": "object",
+          "properties": {
+            "attempts": {"type": "integer", "minimum": 1},
+            "backoff": {"type": "string"}
+          }
+        }
+      },
+      "required": ["url"]
+    },
+    "managed_prefixes": {"type": "array", "items": {"type": "string"}},
+    "include": {"type": "array", "items": {"type": "string"}},
+    "templates": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {"$ref": "#/definitions/label"}
+      }
+    },
+    "selectors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "match": {"type": "string"},
+          "include_templates": {"type": "array", "items": {"type": "string"}}
+        },
+        "required": ["match", "include_templates"]
+      }
+    },
+    "policies": {
+      "type": "object",
+      "properties": {
+        "require_scoped_labels": {"type": "boolean"},
+        "allowed_scopes": {"type": "array", "items": {"type": "string"}},
+        "forbid_labels": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "groups": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/entity"}
+    },
+    "projects": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/entity"}
+    }
+  },
+  "definitions": {
+    "label": {
+      "type": "object",
+      "properties": {
+        "name": {"type": "string"},
+        "color": {"type": "string", "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"},
+        "description": {"type": "string"}
+      },
+      "required": ["name", "color"]
+    },
+    "entity": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "include_templates": {"type": "array", "items": {"type": "string"}},
+        "labels": {"type": "array", "items": {"$ref": "#/definitions/label"}}
+      },
+      "required": ["id"]
+    }
+  }
+}

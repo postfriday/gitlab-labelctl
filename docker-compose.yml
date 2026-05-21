@@ -1,0 +1,11 @@
+services:
+  labels:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    entrypoint: ["/gitlab-labelctl"]
+    working_dir: /workspace
+    volumes:
+      - .:/workspace:ro
+    environment:
+      - GITLAB_TOKEN
