@@ -10,6 +10,12 @@
   - Use `gitlab-labelctl validate --config configs/root.yml`.
   - Ensure the YAML syntax is valid and schema requirements are met.
 
+- `validate` or `sync` appears silent
+  - Successful `validate` prints `Configuration is valid: configs/root.yml`.
+  - Successful no-op `sync` prints `No changes. GitLab labels are already in sync: configs/root.yml`.
+  - Successful applying `sync` prints a summary such as `Sync applied: 3 change(s) (1 create, 1 update, 1 delete): configs/root.yml`.
+  - If these messages are missing in Docker, rebuild the image so the task uses the latest CLI binary.
+
 - `gitlab request failed`
   - Check GitLab base URL and token scopes.
   - Ensure network connectivity and API availability.

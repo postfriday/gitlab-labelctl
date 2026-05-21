@@ -17,12 +17,32 @@ Declarative CLI for GitLab label management using YAML-based desired state.
 Use Taskfile tasks as the primary interface:
 
 ```bash
+task labels:validate
 task labels:diff
-task labels:sync
 task labels:sync:dry-run
+task labels:sync
 ```
 
 The utility runs inside Docker, so Go is not required on the host.
+
+Successful validation prints a confirmation:
+
+```text
+Configuration is valid: configs/root.yml
+```
+
+Successful sync is also explicit. If GitLab already matches the YAML desired
+state, it prints:
+
+```text
+No changes. GitLab labels are already in sync: configs/root.yml
+```
+
+When changes are applied, `sync` prints a summary:
+
+```text
+Sync applied: 3 change(s) (1 create, 1 update, 1 delete): configs/root.yml
+```
 
 Taskfile loads `.env` when present. Use `CONFIG` and `IMAGE` to override the defaults, and `GITLAB_TOKEN` for GitLab authentication:
 

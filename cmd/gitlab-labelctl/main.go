@@ -11,6 +11,7 @@ import (
 	"github.com/postfriday/gitlab-labelctl/internal/diff"
 	"github.com/postfriday/gitlab-labelctl/internal/export"
 	"github.com/postfriday/gitlab-labelctl/internal/gitlab"
+	"github.com/postfriday/gitlab-labelctl/internal/reconcile"
 	"github.com/postfriday/gitlab-labelctl/internal/schema"
 	"github.com/postfriday/gitlab-labelctl/internal/validate"
 	"github.com/postfriday/gitlab-labelctl/pkg/version"
@@ -168,12 +169,76 @@ func syncCmd() *cobra.Command {
 				return err
 			}
 			if dryRun || cfg.Defaults.DryRun {
+				if len(results) == 0 {
+					if jsonOutput {
+						diff.Render(results, os.Stdout, jsonOutput)
+						return nil
+					}
+					return renderSyncSuccess(os.Stdout, cfg.Source, results, false, jsonOutput)
+				}
 				diff.Render(results, os.Stdout, jsonOutput)
 				return nil
 			}
-			return diff.Reconcile(ctx, results, client, continueOnError)
+			if len(results) == 0 {
+				return renderSyncSuccess(os.Stdout, cfg.Source, results, true, jsonOutput)
+			}
+			if err := diff.Reconcile(ctx, results, client, continueOnError); err != nil {
+				return err
+			}
+			return renderSyncSuccess(os.Stdout, cfg.Source, results, true, jsonOutput)
 		},
 	}
+}
+
+type syncSummary struct {
+	Synced  bool   `json:"synced"`
+	Applied bool   `json:"applied"`
+	Config  string `json:"config"`
+	Changes int    `json:"changes"`
+	Create  int    `json:"create"`
+	Update  int    `json:"update"`
+	Delete  int    `json:"delete"`
+}
+
+func renderSyncSuccess(out io.Writer, configPath string, changes []reconcile.Change, applied bool, jsonOutput bool) error {
+	summary := buildSyncSummary(configPath, changes, applied)
+	if jsonOutput {
+		return json.NewEncoder(out).Encode(summary)
+	}
+	if summary.Changes == 0 {
+		_, err := fmt.Fprintf(out, "No changes. GitLab labels are already in sync: %s\n", configPath)
+		return err
+	}
+	_, err := fmt.Fprintf(
+		out,
+		"Sync applied: %d change(s) (%d create, %d update, %d delete): %s\n",
+		summary.Changes,
+		summary.Create,
+		summary.Update,
+		summary.Delete,
+		configPath,
+	)
+	return err
+}
+
+func buildSyncSummary(configPath string, changes []reconcile.Change, applied bool) syncSummary {
+	summary := syncSummary{
+		Synced:  true,
+		Applied: applied,
+		Config:  configPath,
+		Changes: len(changes),
+	}
+	for _, change := range changes {
+		switch change.Kind {
+		case reconcile.Create:
+			summary.Create++
+		case reconcile.Update:
+			summary.Update++
+		case reconcile.Delete:
+			summary.Delete++
+		}
+	}
+	return summary
 }
 
 func exportCmd() *cobra.Command {

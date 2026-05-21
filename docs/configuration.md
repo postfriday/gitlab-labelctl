@@ -32,6 +32,18 @@ Run validation before using the config for diff or sync:
 gitlab-labelctl validate --config configs/root.yml
 ```
 
+Successful validation prints:
+
+```text
+Configuration is valid: configs/root.yml
+```
+
+With `--json`, successful validation prints:
+
+```json
+{"valid":true,"config":"configs/root.yml"}
+```
+
 The validation command still loads authentication settings, so make sure the
 configured token environment variable or `.env` file is available.
 
@@ -540,10 +552,23 @@ Planned changes:
 - `delete`: label exists in GitLab but not in YAML, `delete_unmanaged` is
   enabled, and the label is owned by `managed_prefixes`.
 
-`diff` and `sync --dry-run` render the same plan without applying it. `sync`
-applies the rendered plan when dry-run mode is off. `defaults.reconcile` is not a
-separate execution gate in the current CLI; treat the command you run as the
-source of truth for whether reconciliation is attempted.
+For non-empty plans, `diff` and `sync --dry-run` render the same changes without
+applying them. `sync` applies the rendered plan when dry-run mode is off.
+`defaults.reconcile` is not a separate execution gate in the current CLI; treat
+the command you run as the source of truth for whether reconciliation is
+attempted.
+
+When the sync plan is empty, `sync` prints an explicit no-op message:
+
+```text
+No changes. GitLab labels are already in sync: configs/root.yml
+```
+
+After applying changes, `sync` prints a summary:
+
+```text
+Sync applied: 3 change(s) (1 create, 1 update, 1 delete): configs/root.yml
+```
 
 Preview changes:
 
@@ -568,6 +593,14 @@ Render machine-readable output:
 ```bash
 gitlab-labelctl diff --json --config configs/root.yml
 ```
+
+For `sync --json` when changes are applied, the success output is a summary:
+
+```json
+{"synced":true,"applied":true,"config":"configs/root.yml","changes":3,"create":1,"update":1,"delete":1}
+```
+
+For `sync --dry-run --json`, the output remains a diff payload with `changes`.
 
 ## Schema Support
 
