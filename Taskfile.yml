@@ -4,6 +4,11 @@ vars:
   config: configs/root.yml
 
 tasks:
+  test:
+    desc: Run Go tests in a Dockerized Go toolchain
+    cmds:
+      - docker run --rm -v {{.ROOT_DIR}}:/src -w /src golang:1.23-alpine go test ./...
+
   labels:validate:
     desc: Validate the YAML label configuration
     cmds:
