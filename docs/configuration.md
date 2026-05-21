@@ -47,13 +47,8 @@ With `--json`, successful validation prints:
 The validation command still loads authentication settings, so make sure the
 configured token environment variable or `.env` file is available.
 
-When using the Docker-first workflow:
-
-```bash
-task labels:validate
-task labels:diff
-task labels:sync:dry-run
-```
+For the repository-local Taskfile and Docker workflow, see
+[`docs/local-development.md`](local-development.md).
 
 ## File Layout
 

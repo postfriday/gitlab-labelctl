@@ -10,4 +10,5 @@
 - `internal/validate/` enforces schema and policy rules.
 - `internal/schema/` embeds JSON schema for IDE autocomplete.
 
-Runtime is designed for Docker-only execution; the `Taskfile.yml` exposes the main workflows with `docker build` and `docker run`.
+The repository-local workflow is Docker-first; `Taskfile.yml` exposes the main
+development commands through `docker build` and `docker run`.
